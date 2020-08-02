@@ -5,6 +5,7 @@ import '../blocs/provider.dart';
 class AccountForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    //wired it back to the bloc we created in bloc first created
     final bloc = Provider.of(context);
     // TODO: implement build
     return Container(
@@ -53,11 +54,21 @@ class AccountForm extends StatelessWidget {
   }
 
   Widget submitButton(Bloc bloc) {
-    return RaisedButton(
-      onPressed: () {
-        print('Print in rasied button');
+    return StreamBuilder(
+      //每當stream 更新時,builder就會再行一次
+      stream: bloc
+          .submitValid, //如果其中一條thread 有更新(pass value),就會有return (data / error);
+      builder: (context, snapshot) {
+        return RaisedButton(
+          //if error is passed , data is
+          onPressed: snapshot.hasData
+              ? () {
+                  bloc.submit();
+                }
+              : null,
+          child: Text('Button content'),
+        );
       },
-      child: Text('Button content'),
     );
   }
 }
